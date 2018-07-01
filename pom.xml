@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.mustr</groupId>
-  <artifactId>redisAndQuartz</artifactId>
+  <artifactId>redis-quartz</artifactId>
   <packaging>war</packaging>
   <version>0.0.1-SNAPSHOT</version>
-  <name>redisAndQuartz Maven Webapp</name>
+  <name>redis-quartz Maven Webapp</name>
   <url>http://maven.apache.org</url>
   
   <properties>
@@ -167,6 +167,6 @@
      </dependency>
   </dependencies>
   <build>
-    <finalName>redisAndQuartz</finalName>
+    <finalName>redis-quartz</finalName>
   </build>
 </project>

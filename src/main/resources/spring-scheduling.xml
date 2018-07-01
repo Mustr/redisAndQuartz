@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- 使用 -->
+	<bean id="schedulerManager" class="com.harry.services.impl.SchedulerServiceImpl">
+        <property name="scheduler" ref="quartzScheduler"/>
+    </bean>
+    
+	<bean id="jobFactory" class="com.harry.common.JobFactory"/>
+	<bean id="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="dataSource" ref ="dataSource" />
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContextKey"/>
+        <property name="configLocation" value="classpath:conf/properties/quartz.properties"/>
+        <property name="startupDelay" value="20"/>
+        <property name="jobFactory" ref="jobFactory"/>
+        <property name="overwriteExistingJobs" value="true"/>
+        <property name="triggers" >
+            <list>
+                <!-- <ref bean="cronTrigger_1"/> -->
+                <!-- <ref bean="cronTrigger_2"/> -->
+                <!-- <ref bean="cronTrigger_3"/> -->
+            </list>
+        </property>
+    </bean>
+    
+    <!-- 自定义生成jobDetail 
+	       调用目标对象的方法来处理（此方法能持久化到数据库）。
+     -->
+    <bean id="scheduleHandler" class="com.harry.common.ScheduleHandler"/>
+    <bean id="firstJob" class="com.harry.common.MethodInvokingJobDetailFactoryBean">  
+       <property name="targetObject" ref="scheduleHandler"/>  
+       <property name="targetMethod" value="firstSchedule"/> 
+       <property name="beanName" value="firstJob"/>
+       <property name="durable" value="true"/>
+    </bean>
+    
+    <!-- 定义jobDetail 
+	       调用目标对象的方法来处理（此方法不能持久化到数据库）。
+     -->
+    <bean id="jobDetail_1" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">  
+       <property name="targetObject" ref="scheduleHandler"/>  
+       <property name="targetMethod" value="firstSchedule"/>
+       <property name="name" value="testJob"/>
+    </bean>
+     
+    <!-- 定义trigger -->
+    <bean id="cronTrigger_1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+       <!-- 指定Tirgger绑定的Job -->
+       <property name="jobDetail" ref="jobDetail_1"/>
+       <!-- 5秒执行一次 -->
+       <property name="cronExpression" value="0/5 * * * * ? "/>
+    </bean> 
+    
+    <!-- 直接定义job类来处理  （org.springframework.scheduling.quartz.JobDetailFactoryBean）-->
+    <bean name="jobDetail_2" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+      <!--   指定job的名称 -->
+        <property name="name" value="jobDetail_2"/>
+      <!--指定job的分组 -->
+        <property name="group" value="group2"/>
+        <!-- 指定具体的job类,必须使用这种写法，不然保存不到数据库 -->
+        <property name="jobClass">
+          <value>com.harry.jobs.FirstJob</value>
+        </property>
+        <!-- 必须设置为true，如果为false，当没有活动的触发器与之关联时会在调度器中会删除该任务 --> 
+        <property name="durability" value="true"/>
+        <!-- 指定spring容器的key，如果不设定在job中的jobmap中是获取不到spring容器的 -->
+       <!--  <property name="applicationContextJobDataKey" value="applicationContext"/> -->
+    </bean>
+    
+    <bean id="cronTrigger_2" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+       <!-- 指定Trigger的名称 -->
+        <property name="name" value="cronTrigger_2"/>
+        <!-- 指定Trigger的分组 -->
+        <property name="group" value="group2"/>
+        <!-- 指定Tirgger绑定的Job -->
+       <property name="jobDetail" ref="jobDetail_2"/>
+       <!-- 10秒执行一次 -->
+       <property name="cronExpression" value="0/10 * * * * ? "/>
+    </bean>
+    
+    <bean id="cronTrigger_3" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+       <!-- 指定Trigger的名称 -->
+        <property name="name" value="firstJob"/>
+        <!-- 指定Trigger的分组 -->
+        <property name="group" value="DEFAULT"/>
+        <!-- 指定Tirgger绑定的Job -->
+       <property name="jobDetail" ref="firstJob"/>
+       <!-- 一分钟执行一次 -->
+       <property name="cronExpression" value="0 * * * * ? *"/>
+    </bean>
+</beans>
