@@ -17,7 +17,7 @@ import org.springframework.util.CollectionUtils;
 @Component
 public class JedisTemplateUtils {
 
-	@Autowired
+	@Autowired(required=false)
 	private RedisTemplate<String, Object> redisTemplate;
 	
 	public void setRedisTemplate(RedisTemplate<String, Object> redisTemplate) {

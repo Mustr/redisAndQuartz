@@ -1,35 +1,26 @@
 package com.harry.utils;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import redis.clients.jedis.ShardedJedis;
 import redis.clients.jedis.ShardedJedisPool;
 
 /**
  * sharded版连接池工具类
  */
-@Component
 public class JedisShardedPoolsUtils {
 
-	@Autowired
 	private ShardedJedisPool shardedJedisPool;
 
 	private JedisShardedPoolsUtils() {
+		shardedJedisPool = SpringUtils.getBean("shardedJedisPool");
 	}
 
-	private static JedisShardedPoolsUtils jedisShardedPoolsUtils;  
+	static class Holder{
+		static JedisShardedPoolsUtils instance = new JedisShardedPoolsUtils();
+	}
     
-    @PostConstruct  
-    public void init(){  
-    	jedisShardedPoolsUtils = this;  
-    	jedisShardedPoolsUtils.shardedJedisPool = this.shardedJedisPool;  
-    }  
 
 	public static JedisShardedPoolsUtils getInstance() {
-		return jedisShardedPoolsUtils;
+		return Holder.instance;
 	}
 
 	/**
