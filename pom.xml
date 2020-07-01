@@ -13,7 +13,7 @@
   	<spring-version>5.0.0.RELEASE</spring-version>
   	<asp-version>1.8.0</asp-version>
   	<quartz-version>2.3.0</quartz-version>
-  	<log4j2-version>2.11.0</log4j2-version>
+  	<log4j2-version>2.13.3</log4j2-version>
   	<junit-version>4.12</junit-version>
   	<jedis-version>2.9.0</jedis-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
